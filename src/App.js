@@ -3,46 +3,13 @@ import './index.css';
 import DialingGuide from './components/DialingGuide';
 import { recipeStorage } from './utils/recipeStorage.js';
 
+const getInitialRecipe = (method) => ({ beanInfo: { name: '', roaster: '', roastDate: new Date().toISOString().split('T')[0], }, baseParams: { grindSize: 20, doseWeight: method === 'espresso' ? 18 : 15, waterTemperature: 93, }, methodParams: method === 'espresso' ? { yield: 36, brewTime: 30, pressure: null } : { totalWater: 250, bloomWater: 30, bloomTime: 30, pourStages: [], totalTime: 180, drawdownTime: null }, });
+
 const RecipeForm = ({ onSave }) => {
   const [brewingMethod, setBrewingMethod] = useState('espresso');
-  const [recipe, setRecipe] = useState({
-    beanInfo: {
-      name: '',
-      roaster: '',
-      roastDate: new Date().toISOString().split('T')[0],
-    },
-    baseParams: {
-      grindSize: 20,
-      doseWeight: brewingMethod === 'espresso' ? 18 : 15,
-      waterTemperature: 93,
-    },
-    methodParams: brewingMethod === 'espresso' ? {
-      yield: 36,
-      brewTime: 30,
-      pressure: null,
-    } : {
-      totalWater: 250,
-      bloomWater: 30,
-      bloomTime: 30,
-      pourStages: [],
-      totalTime: 180,
-      drawdownTime: null,
-    },
-  });
+  const [recipe, setRecipe] = useState(getInitialRecipe('espresso'));
   
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave(recipe);
-    setRecipe({
-      beanName: '',
-      roaster: '',
-      roastDate: new Date().toISOString().split('T')[0],
-      grindSize: 20,
-      doseWeight: 18,
-      yield: 36,
-      brewTime: 30
-    });
-  };
+  const handleSubmit = (e) => { e.preventDefault(); onSave(recipe); setRecipe(getInitialRecipe(brewingMethod)); };
 
   const handleMethodChange = (method) => {
     setBrewingMethod(method);
