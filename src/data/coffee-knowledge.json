@@ -1,0 +1,165 @@
+{
+  "extraction": {
+    "under": {
+      "name": "Under-extracted",
+      "characteristics": [
+        "Sour/lemony",
+        "Sharp acidity",
+        "Lacking sweetness",
+        "Quick finish"
+      ],
+      "causes": [
+        "Grind too coarse",
+        "Temperature too low",
+        "Brew time too short"
+      ]
+    },
+    "good": {
+      "name": "Well extracted",
+      "characteristics": [
+        "Sweet",
+        "Well balanced",
+        "Complex flavors",
+        "Pleasant finish"
+      ],
+      "causes": [
+        "Proper grind size",
+        "Appropriate temperature",
+        "Correct brew time"
+      ]
+    },
+    "over": {
+      "name": "Over-extracted",
+      "characteristics": [
+        "Bitter",
+        "Dry/astringent",
+        "Hollow taste",
+        "Harsh finish"
+      ],
+      "causes": [
+        "Grind too fine",
+        "Temperature too high",
+        "Brew time too long"
+      ]
+    }
+  },
+  "strength": {
+    "weak": {
+      "name": "Too weak",
+      "characteristics": [
+        "Watery",
+        "Thin body",
+        "Lack of intensity",
+        "Quick dissipating taste"
+      ]
+    },
+    "good": {
+      "name": "Good strength",
+      "characteristics": [
+        "Full-bodied",
+        "Rich flavor",
+        "Good mouthfeel",
+        "Lingering taste"
+      ]
+    },
+    "strong": {
+      "name": "Too strong",
+      "characteristics": [
+        "Intense/concentrated",
+        "Heavy body",
+        "Overwhelming",
+        "Intense aftertaste"
+      ]
+    }
+  },
+  "recommendations": {
+    "under": {
+      "weak": {
+        "primary": "Grind finer and/or increase dose",
+        "explanation": "Your coffee is both under-extracted and weak. Try:",
+        "adjustments": {
+          "grind": -2,
+          "dose": 0.5,
+          "yield": 0,
+          "ratio": "lower"
+        }
+      },
+      "good": {
+        "primary": "Grind finer, maintain ratio",
+        "explanation": "Your coffee is under-extracted but good strength. Try:",
+        "adjustments": {
+          "grind": -2,
+          "dose": 0,
+          "yield": 0,
+          "ratio": "same"
+        }
+      },
+      "strong": {
+        "primary": "Grind finer, decrease dose",
+        "explanation": "Your coffee is under-extracted and too strong. Try:",
+        "adjustments": {
+          "grind": -2,
+          "dose": -0.5,
+          "yield": 0,
+          "ratio": "higher"
+        }
+      }
+    }
+  },
+  "parameters": {
+    "grindSize": {
+      "range": {
+        "min": 1,
+        "max": 50,
+        "default": 20
+      },
+      "description": "The fineness of your coffee grounds",
+      "tips": [
+        "Finer grind = slower flow, more extraction",
+        "Coarser grind = faster flow, less extraction"
+      ]
+    },
+    "dose": {
+      "range": {
+        "min": 14,
+        "max": 24,
+        "default": 18,
+        "step": 0.5
+      },
+      "unit": "grams",
+      "description": "Amount of ground coffee used",
+      "tips": [
+        "Higher dose = stronger coffee",
+        "Lower dose = weaker coffee"
+      ]
+    },
+    "yield": {
+      "range": {
+        "min": 25,
+        "max": 60,
+        "default": 36,
+        "step": 1
+      },
+      "unit": "grams",
+      "description": "Amount of brewed coffee produced",
+      "tips": [
+        "Higher yield = weaker coffee",
+        "Lower yield = stronger coffee"
+      ]
+    },
+    "brewTime": {
+      "range": {
+        "min": 20,
+        "max": 40,
+        "default": 30,
+        "step": 1
+      },
+      "unit": "seconds",
+      "description": "Total brew time",
+      "tips": [
+        "Longer time = more extraction",
+        "Shorter time = less extraction"
+      ]
+    }
+  }
+}
