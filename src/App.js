@@ -1,16 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import './index.css';
 import DialingGuide from './components/DialingGuide';
+import { recipeStorage } from './utils/recipeStorage.js';
 
 const RecipeForm = ({ onSave }) => {
+  const [brewingMethod, setBrewingMethod] = useState('espresso');
   const [recipe, setRecipe] = useState({
-    beanName: '',
-    roaster: '',
-    roastDate: new Date().toISOString().split('T')[0],
-    grindSize: 20,
-    doseWeight: 18,
-    yield: 36,
-    brewTime: 30
+    beanInfo: {
+      name: '',
+      roaster: '',
+      roastDate: new Date().toISOString().split('T')[0],
+    },
+    baseParams: {
+      grindSize: 20,
+      doseWeight: brewingMethod === 'espresso' ? 18 : 15,
+      waterTemperature: 93,
+    },
+    methodParams: brewingMethod === 'espresso' ? {
+      yield: 36,
+      brewTime: 30,
+      pressure: null,
+    } : {
+      totalWater: 250,
+      bloomWater: 30,
+      bloomTime: 30,
+      pourStages: [],
+      totalTime: 180,
+      drawdownTime: null,
+    },
   });
   
   const handleSubmit = (e) => {
@@ -27,8 +44,60 @@ const RecipeForm = ({ onSave }) => {
     });
   };
 
+  const handleMethodChange = (method) => {
+    setBrewingMethod(method);
+    setRecipe(prev => ({
+      ...prev,
+      baseParams: {
+        ...prev.baseParams,
+        doseWeight: method === 'espresso' ? 18 : 15,
+      },
+      methodParams: method === 'espresso' ? {
+        yield: 36,
+        brewTime: 30,
+        pressure: null,
+      } : {
+        totalWater: 250,
+        bloomWater: 30,
+        bloomTime: 30,
+        pourStages: [],
+        totalTime: 180,
+        drawdownTime: null,
+      },
+    }));
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+      <div className="mb-6">
+  <label className="block text-gray-700 text-sm font-bold mb-2">
+    Brewing Method
+  </label>
+  <div className="flex gap-4">
+    <button
+      type="button"
+      onClick={() => handleMethodChange('espresso')}
+      className={`px-4 py-2 rounded ${
+        brewingMethod === 'espresso' 
+          ? 'bg-blue-500 text-white' 
+          : 'bg-gray-200 text-gray-700'
+      }`}
+    >
+      Espresso
+    </button>
+    <button
+      type="button"
+      onClick={() => handleMethodChange('v60')}
+      className={`px-4 py-2 rounded ${
+        brewingMethod === 'v60' 
+          ? 'bg-blue-500 text-white' 
+          : 'bg-gray-200 text-gray-700'
+      }`}
+    >
+      V60
+    </button>
+  </div>
+</div>
       <div>
         <label className="block text-gray-700 text-sm font-bold mb-2">
           Bean Name
@@ -89,41 +158,110 @@ const RecipeForm = ({ onSave }) => {
           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         />
       </div>
+      {brewingMethod === 'espresso' ? (
+  <div className="space-y-4">
+    <div>
+      <label className="block text-gray-700 text-sm font-bold mb-2">
+        Yield (g)
+      </label>
+      <input
+        type="number"
+        step="0.1"
+        value={recipe.methodParams.yield}
+        onChange={(e) => setRecipe({
+          ...recipe,
+          methodParams: { ...recipe.methodParams, yield: parseFloat(e.target.value) }
+        })}
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      />
+    </div>
+    <div>
+      <label className="block text-gray-700 text-sm font-bold mb-2">
+        Brew Time (s)
+      </label>
+      <input
+        type="number"
+        value={recipe.methodParams.brewTime}
+        onChange={(e) => setRecipe({
+          ...recipe,
+          methodParams: { ...recipe.methodParams, brewTime: parseInt(e.target.value) }
+        })}
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      />
+    </div>
+  </div>
+) : (
+  <div className="space-y-4">
+    <div>
+      <label className="block text-gray-700 text-sm font-bold mb-2">
+        Total Water (g)
+      </label>
+      <input
+        type="number"
+        step="1"
+        value={recipe.methodParams.totalWater}
+        onChange={(e) => setRecipe({
+          ...recipe,
+          methodParams: { ...recipe.methodParams, totalWater: parseInt(e.target.value) }
+        })}
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      />
+    </div>
+    <div className="grid grid-cols-2 gap-4">
       <div>
         <label className="block text-gray-700 text-sm font-bold mb-2">
-          Yield (g)
+          Bloom Water (g)
         </label>
         <input
           type="number"
-          step="0.1"
-          value={recipe.yield}
-          onChange={(e) =>
-            setRecipe({ ...recipe, yield: parseFloat(e.target.value) })
-          }
+          value={recipe.methodParams.bloomWater}
+          onChange={(e) => setRecipe({
+            ...recipe,
+            methodParams: { ...recipe.methodParams, bloomWater: parseInt(e.target.value) }
+          })}
           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         />
       </div>
       <div>
         <label className="block text-gray-700 text-sm font-bold mb-2">
-          Brew Time (s)
+          Bloom Time (s)
         </label>
         <input
           type="number"
-          value={recipe.brewTime}
-          onChange={(e) =>
-            setRecipe({ ...recipe, brewTime: parseInt(e.target.value) })
-          }
+          value={recipe.methodParams.bloomTime}
+          onChange={(e) => setRecipe({
+            ...recipe,
+            methodParams: { ...recipe.methodParams, bloomTime: parseInt(e.target.value) }
+          })}
           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         />
       </div>
+    </div>
+    <div>
+      <label className="block text-gray-700 text-sm font-bold mb-2">
+        Total Time (s)
+      </label>
+      <input
+        type="number"
+        value={recipe.methodParams.totalTime}
+        onChange={(e) => setRecipe({
+          ...recipe,
+          methodParams: { ...recipe.methodParams, totalTime: parseInt(e.target.value) }
+        })}
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      />
+    </div>
+  </div>
+)}
 
       {/* Add the Dialing Guide component here */}
       <DialingGuide 
-        currentRecipe={recipe}
-        onUpdateRecipe={(updatedRecipe) => {
-          setRecipe(updatedRecipe);
-        }}
-      />
+  currentRecipe={recipe}
+  brewingMethod={brewingMethod}
+  onUpdateRecipe={(updatedRecipe) => {
+    setRecipe(updatedRecipe);
+  }}
+/>
       
       <div>
         <button
@@ -153,10 +291,15 @@ const RecipeList = ({ recipes, onSelect }) => {
               onClick={() => onSelect(recipe)}
               className="block w-full p-4 text-left bg-white rounded-lg shadow hover:bg-gray-100"
             >
-              <div className="font-bold">{recipe.beanName}</div>
+              <div className="font-bold">
+                {recipe.beanInfo ? recipe.beanInfo.name : recipe.beanName}
+              </div>
               <div className="text-sm text-gray-500">
-                {recipe.roaster} -{' '}
-                {new Date(recipe.roastDate).toLocaleDateString()}
+                {recipe.beanInfo ? recipe.beanInfo.roaster : recipe.roaster} -{' '}
+                {new Date(recipe.beanInfo ? recipe.beanInfo.roastDate : recipe.roastDate).toLocaleDateString()}
+              </div>
+              <div className="text-xs text-gray-400 mt-1">
+                {recipe.brewingMethod ? recipe.brewingMethod.toUpperCase() : 'ESPRESSO'}
               </div>
             </button>
           </li>
@@ -217,16 +360,18 @@ const App = () => {
   const [selectedRecipe, setSelectedRecipe] = useState(null);
 
   useEffect(() => {
-    const savedRecipes = localStorage.getItem('recipes');
-    if (savedRecipes) {
-      setRecipes(JSON.parse(savedRecipes));
-    }
+    const initializeApp = async () => {
+      await recipeStorage.migrateExistingRecipes();
+      const savedRecipes = recipeStorage.getAllRecipes();
+      setRecipes(savedRecipes);
+    };
+    
+    initializeApp();
   }, []);
 
-  const handleSaveRecipe = (newRecipe) => {
-    const updatedRecipes = [...recipes, { ...newRecipe, id: Date.now() }];
-    setRecipes(updatedRecipes);
-    localStorage.setItem('recipes', JSON.stringify(updatedRecipes));
+  const handleSaveRecipe = (recipeData) => {
+    const newRecipe = recipeStorage.createRecipe(recipeData);
+    setRecipes(prevRecipes => [...prevRecipes, newRecipe]);
   };
 
   return (
