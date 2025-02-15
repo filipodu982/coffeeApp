@@ -3,7 +3,7 @@ import { Alert, AlertDescription } from '../components/ui/alert.jsx';
 import { useCoffeeRecommendations } from '../hooks/useCoffeeRecommendations';
 import ExtractionVisual from './ExtractionVisual';
 
-const DialingGuide = ({ currentRecipe, onUpdateRecipe }) => {
+const DialingGuide = ({ currentRecipe, brewingMethod, onUpdateRecipe }) => {
   const [step, setStep] = useState(1);
   const [strength, setStrength] = useState(null);
   const [extraction, setExtraction] = useState(null);
@@ -11,114 +11,120 @@ const DialingGuide = ({ currentRecipe, onUpdateRecipe }) => {
   const strengthOptions = ['weak', 'good', 'strong'];
   const extractionOptions = ['under', 'good', 'over'];
 
-  // Calculate the ratio for reference
-  const ratio = currentRecipe ? (currentRecipe.yield / currentRecipe.doseWeight).toFixed(2) : 0;
-  
-  const getRecommendation = () => {
-    if (!strength || !extraction) return null;
-    
-    // Comprehensive recommendation logic based on both strength and extraction
-    if (extraction === 'under') {
-      if (strength === 'weak') {
-        return {
-          primary: "Grind finer and/or increase dose",
-          explanation: "Your coffee is both under-extracted and weak. Try:",
-          steps: [
-            "Decrease grind size by 2 steps",
-            `Consider increasing dose from ${currentRecipe.doseWeight}g to ${(currentRecipe.doseWeight + 0.5).toFixed(1)}g`,
-            `Current ratio is 1:${ratio}, aim for a lower ratio for more strength`
-          ]
-        };
-      } else if (strength === 'good') {
-        return {
-          primary: "Grind finer only",
-          explanation: "Your coffee is under-extracted but has good strength. Try:",
-          steps: [
-            "Decrease grind size by 2 steps",
-            "Keep current dose and ratio",
-            "This should increase extraction while maintaining strength"
-          ]
-        };
-      } else {
-        return {
-          primary: "Grind finer and decrease dose",
-          explanation: "Your coffee is under-extracted and too strong. Try:",
-          steps: [
-            "Decrease grind size by 2 steps",
-            `Consider decreasing dose from ${currentRecipe.doseWeight}g to ${(currentRecipe.doseWeight - 0.5).toFixed(1)}g`,
-            `Current ratio is 1:${ratio}, aim for a slightly higher ratio`
-          ]
-        };
-      }
-    } else if (extraction === 'over') {
-      if (strength === 'weak') {
-        return {
-          primary: "Grind coarser and increase dose",
-          explanation: "Your coffee is over-extracted and weak. Try:",
-          steps: [
-            "Increase grind size by 2 steps",
-            `Consider increasing dose from ${currentRecipe.doseWeight}g to ${(currentRecipe.doseWeight + 0.5).toFixed(1)}g`,
-            `Current ratio is 1:${ratio}, aim for a lower ratio`
-          ]
-        };
-      } else if (strength === 'good') {
-        return {
-          primary: "Grind coarser only",
-          explanation: "Your coffee is over-extracted but has good strength. Try:",
-          steps: [
-            "Increase grind size by 2 steps",
-            "Keep current dose and ratio",
-            "This should reduce extraction while maintaining strength"
-          ]
-        };
-      } else {
-        return {
-          primary: "Grind coarser and decrease dose",
-          explanation: "Your coffee is over-extracted and too strong. Try:",
-          steps: [
-            "Increase grind size by 2 steps",
-            `Consider decreasing dose from ${currentRecipe.doseWeight}g to ${(currentRecipe.doseWeight - 0.5).toFixed(1)}g`,
-            `Current ratio is 1:${ratio}, aim for a higher ratio`
-          ]
-        };
-      }
-    } else {
-      if (strength === 'weak') {
-        return {
-          primary: "Increase dose or decrease yield",
-          explanation: "Your extraction is good but coffee is weak. Try:",
-          steps: [
-            "Keep current grind size",
-            `Consider increasing dose from ${currentRecipe.doseWeight}g to ${(currentRecipe.doseWeight + 0.5).toFixed(1)}g`,
-            "Or decrease yield while keeping grind size the same"
-          ]
-        };
-      } else if (strength === 'good') {
-        return {
-          primary: "Perfect! Save this recipe",
-          explanation: "You've found the sweet spot! Record these parameters:",
-          steps: [
-            `Grind size: ${currentRecipe.grindSize}`,
-            `Dose: ${currentRecipe.doseWeight}g`,
-            `Yield: ${currentRecipe.yield}g (1:${ratio})`,
-            `Time: ${currentRecipe.brewTime}s`
-          ]
-        };
-      } else {
-        return {
-          primary: "Decrease dose or increase yield",
-          explanation: "Your extraction is good but coffee is too strong. Try:",
-          steps: [
-            "Keep current grind size",
-            `Consider decreasing dose from ${currentRecipe.doseWeight}g to ${(currentRecipe.doseWeight - 0.5).toFixed(1)}g`,
-            "Or increase yield while keeping grind size the same"
-          ]
-        };
-      }
-    }
-  };
+  const { getRecommendation, getStrengthInfo, getExtractionInfo } = useCoffeeRecommendations(currentRecipe);
 
-  const recommendation = getRecommendation();
+  // Calculate the ratio for reference
+  const ratio = currentRecipe ? (
+    brewingMethod === 'espresso' 
+      ? (currentRecipe.methodParams.yield / currentRecipe.baseParams.doseWeight).toFixed(2)
+      : (currentRecipe.methodParams.totalWater / currentRecipe.baseParams.doseWeight).toFixed(1)
+  ) : 0;
+  
+  // const getRecommendation = () => {
+  //   if (!strength || !extraction) return null;
+    
+  //   // Comprehensive recommendation logic based on both strength and extraction
+  //   if (extraction === 'under') {
+  //     if (strength === 'weak') {
+  //       return {
+  //         primary: "Grind finer and/or increase dose",
+  //         explanation: "Your coffee is both under-extracted and weak. Try:",
+  //         steps: [
+  //           "Decrease grind size by 2 steps",
+  //           `Consider increasing dose from ${currentRecipe.doseWeight}g to ${(currentRecipe.doseWeight + 0.5).toFixed(1)}g`,
+  //           `Current ratio is 1:${ratio}, aim for a lower ratio for more strength`
+  //         ]
+  //       };
+  //     } else if (strength === 'good') {
+  //       return {
+  //         primary: "Grind finer only",
+  //         explanation: "Your coffee is under-extracted but has good strength. Try:",
+  //         steps: [
+  //           "Decrease grind size by 2 steps",
+  //           "Keep current dose and ratio",
+  //           "This should increase extraction while maintaining strength"
+  //         ]
+  //       };
+  //     } else {
+  //       return {
+  //         primary: "Grind finer and decrease dose",
+  //         explanation: "Your coffee is under-extracted and too strong. Try:",
+  //         steps: [
+  //           "Decrease grind size by 2 steps",
+  //           `Consider decreasing dose from ${currentRecipe.doseWeight}g to ${(currentRecipe.doseWeight - 0.5).toFixed(1)}g`,
+  //           `Current ratio is 1:${ratio}, aim for a slightly higher ratio`
+  //         ]
+  //       };
+  //     }
+  //   } else if (extraction === 'over') {
+  //     if (strength === 'weak') {
+  //       return {
+  //         primary: "Grind coarser and increase dose",
+  //         explanation: "Your coffee is over-extracted and weak. Try:",
+  //         steps: [
+  //           "Increase grind size by 2 steps",
+  //           `Consider increasing dose from ${currentRecipe.doseWeight}g to ${(currentRecipe.doseWeight + 0.5).toFixed(1)}g`,
+  //           `Current ratio is 1:${ratio}, aim for a lower ratio`
+  //         ]
+  //       };
+  //     } else if (strength === 'good') {
+  //       return {
+  //         primary: "Grind coarser only",
+  //         explanation: "Your coffee is over-extracted but has good strength. Try:",
+  //         steps: [
+  //           "Increase grind size by 2 steps",
+  //           "Keep current dose and ratio",
+  //           "This should reduce extraction while maintaining strength"
+  //         ]
+  //       };
+  //     } else {
+  //       return {
+  //         primary: "Grind coarser and decrease dose",
+  //         explanation: "Your coffee is over-extracted and too strong. Try:",
+  //         steps: [
+  //           "Increase grind size by 2 steps",
+  //           `Consider decreasing dose from ${currentRecipe.doseWeight}g to ${(currentRecipe.doseWeight - 0.5).toFixed(1)}g`,
+  //           `Current ratio is 1:${ratio}, aim for a higher ratio`
+  //         ]
+  //       };
+  //     }
+  //   } else {
+  //     if (strength === 'weak') {
+  //       return {
+  //         primary: "Increase dose or decrease yield",
+  //         explanation: "Your extraction is good but coffee is weak. Try:",
+  //         steps: [
+  //           "Keep current grind size",
+  //           `Consider increasing dose from ${currentRecipe.doseWeight}g to ${(currentRecipe.doseWeight + 0.5).toFixed(1)}g`,
+  //           "Or decrease yield while keeping grind size the same"
+  //         ]
+  //       };
+  //     } else if (strength === 'good') {
+  //       return {
+  //         primary: "Perfect! Save this recipe",
+  //         explanation: "You've found the sweet spot! Record these parameters:",
+  //         steps: [
+  //           `Grind size: ${currentRecipe.grindSize}`,
+  //           `Dose: ${currentRecipe.doseWeight}g`,
+  //           `Yield: ${currentRecipe.yield}g (1:${ratio})`,
+  //           `Time: ${currentRecipe.brewTime}s`
+  //         ]
+  //       };
+  //     } else {
+  //       return {
+  //         primary: "Decrease dose or increase yield",
+  //         explanation: "Your extraction is good but coffee is too strong. Try:",
+  //         steps: [
+  //           "Keep current grind size",
+  //           `Consider decreasing dose from ${currentRecipe.doseWeight}g to ${(currentRecipe.doseWeight - 0.5).toFixed(1)}g`,
+  //           "Or increase yield while keeping grind size the same"
+  //         ]
+  //       };
+  //     }
+  //   }
+  // };
+
+  const recommendation = getRecommendation(strength, extraction);
 
   return (
     <div className="space-y-6 bg-white p-6 rounded-lg shadow">
@@ -154,7 +160,10 @@ const DialingGuide = ({ currentRecipe, onUpdateRecipe }) => {
         
         {/* Extraction Visual Guide */}
         <div className="mb-6">
-          <ExtractionVisual selectedExtraction={extraction} />
+        <ExtractionVisual 
+  selectedExtraction={extraction}
+  brewingMethod={brewingMethod}
+/>
         </div>
 
         <div className="grid grid-cols-3 gap-4">

@@ -17,151 +17,234 @@
     "under": {
       "name": "Under-extracted",
       "description": "The coffee is sour and lacks sweetness",
-      "characteristics": [
-        "Sour/lemony",
-        "Sharp acidity",
-        "Lacking sweetness",
-        "Quick finish"
-      ]
+      "characteristics": {
+        "espresso": [
+          "Sour/lemony",
+          "Sharp acidity",
+          "Lacking sweetness",
+          "Quick finish"
+        ],
+        "v60": [
+          "Sour/bright",
+          "Tea-like",
+          "Lacking sweetness",
+          "Quick finish",
+          "Empty mouthfeel"
+        ]
+      }
     },
     "good": {
       "name": "Well extracted",
       "description": "The coffee is sweet and balanced",
-      "characteristics": [
-        "Sweet",
-        "Well balanced",
-        "Complex flavors",
-        "Pleasant finish"
-      ]
+      "characteristics": {
+        "espresso": [
+          "Sweet",
+          "Well balanced",
+          "Complex flavors",
+          "Pleasant finish"
+        ],
+        "v60": [
+          "Sweet",
+          "Clear and bright",
+          "Complex flavors",
+          "Clean finish",
+          "Good mouthfeel"
+        ]
+      }
     },
     "over": {
       "name": "Over-extracted",
       "description": "The coffee is bitter and astringent",
-      "characteristics": [
-        "Bitter",
-        "Dry/astringent",
-        "Hollow taste",
-        "Harsh finish"
-      ]
+      "characteristics": {
+        "espresso": [
+          "Bitter",
+          "Dry/astringent",
+          "Hollow taste",
+          "Harsh finish"
+        ],
+        "v60": [
+          "Bitter",
+          "Dry/astringent",
+          "Muddy flavors",
+          "Long, unpleasant finish"
+        ]
+      }
     }
   },
   "recommendations": {
-    "under": {
-      "weak": {
-        "primary": "Grind finer and/or increase dose",
-        "explanation": "Your coffee is both under-extracted and weak. Try:",
-        "adjustments": {
-          "grind": {
-            "direction": "finer",
-            "steps": 2
-          },
-          "dose": {
-            "change": 0.5,
-            "unit": "g"
-          },
-          "ratio": "lower"
-        }
-      },
-      "good": {
-        "primary": "Grind finer only",
-        "explanation": "Your coffee is under-extracted but has good strength. Try:",
-        "adjustments": {
-          "grind": {
-            "direction": "finer",
-            "steps": 2
-          },
-          "keepCurrent": ["dose", "ratio"]
-        }
-      },
-      "strong": {
-        "primary": "Grind finer and decrease dose",
-        "explanation": "Your coffee is under-extracted and too strong. Try:",
-        "adjustments": {
-          "grind": {
-            "direction": "finer",
-            "steps": 2
-          },
-          "dose": {
-            "change": -0.5,
-            "unit": "g"
-          },
-          "ratio": "higher"
+    "espresso": {
+      "under": {
+        "weak": {
+          "primary": "Grind finer and/or increase dose",
+          "explanation": "Your coffee is both under-extracted and weak. Try:",
+          "adjustments": {
+            "grind": {
+              "direction": "finer",
+              "steps": 2
+            },
+            "dose": {
+              "change": 0.5,
+              "unit": "g"
+            },
+            "ratio": "lower"
+          }
         }
       }
     },
-    "good": {
-      "weak": {
-        "primary": "Increase dose or decrease yield",
-        "explanation": "Your extraction is good but coffee is weak. Try:",
-        "adjustments": {
-          "dose": {
-            "change": 0.5,
-            "unit": "g"
-          },
-          "keepCurrent": ["grind"],
-          "yield": "decrease"
+    "v60": {
+      "under": {
+        "weak": {
+          "primary": "Grind finer and adjust ratio",
+          "explanation": "Your coffee is both under-extracted and weak. Try:",
+          "adjustments": {
+            "grind": {
+              "direction": "finer",
+              "steps": 3
+            },
+            "dose": {
+              "change": 2,
+              "unit": "g"
+            },
+            "technique": [
+              "Pour more slowly",
+              "Ensure even saturation"
+            ],
+            "ratio": {
+              "target": 15,
+              "direction": "lower"
+            },
+            "temperature": {
+              "min": 92,
+              "max": 96
+            }
+          }
+        },
+        "good": {
+          "primary": "Grind finer and adjust pouring",
+          "explanation": "Your coffee is under-extracted but has good strength. Try:",
+          "adjustments": {
+            "grind": {
+              "direction": "finer",
+              "steps": 2
+            },
+            "technique": [
+              "Pour more slowly",
+              "Ensure even saturation"
+            ],
+            "temperature": {
+              "min": 92,
+              "max": 96
+            },
+            "keepCurrent": ["ratio", "dose"]
+          }
+        },
+        "strong": {
+          "primary": "Grind finer but dilute",
+          "explanation": "Your coffee is under-extracted and too strong. Try:",
+          "adjustments": {
+            "grind": {
+              "direction": "finer",
+              "steps": 2
+            },
+            "ratio": {
+              "target": 16.5,
+              "direction": "higher"
+            },
+            "technique": [
+              "Keep current pouring speed",
+              "Ensure even saturation"
+            ]
+          }
         }
       },
       "good": {
-        "primary": "Perfect! Save this recipe",
-        "explanation": "You've found the sweet spot! Record these parameters:",
-        "adjustments": {
-          "saveParameters": true
+        "weak": {
+          "primary": "Adjust ratio only",
+          "explanation": "Your extraction is good but coffee is weak. Try:",
+          "adjustments": {
+            "ratio": {
+              "target": 15,
+              "direction": "lower"
+            },
+            "dose": {
+              "change": 2,
+              "unit": "g"
+            },
+            "keepCurrent": ["grind", "technique"]
+          }
+        },
+        "good": {
+          "primary": "Perfect! Save this recipe",
+          "explanation": "You've found the sweet spot! Record these parameters:",
+          "adjustments": {
+            "saveParameters": true
+          }
+        },
+        "strong": {
+          "primary": "Adjust ratio only",
+          "explanation": "Your extraction is good but coffee is too strong. Try:",
+          "adjustments": {
+            "ratio": {
+              "target": 16.5,
+              "direction": "higher"
+            },
+            "keepCurrent": ["grind", "technique"]
+          }
         }
       },
-      "strong": {
-        "primary": "Decrease dose or increase yield",
-        "explanation": "Your extraction is good but coffee is too strong. Try:",
-        "adjustments": {
-          "dose": {
-            "change": -0.5,
-            "unit": "g"
-          },
-          "keepCurrent": ["grind"],
-          "yield": "increase"
-        }
-      }
-    },
-    "over": {
-      "weak": {
-        "primary": "Grind coarser and increase dose",
-        "explanation": "Your coffee is over-extracted and weak. Try:",
-        "adjustments": {
-          "grind": {
-            "direction": "coarser",
-            "steps": 2
-          },
-          "dose": {
-            "change": 0.5,
-            "unit": "g"
-          },
-          "ratio": "lower"
-        }
-      },
-      "good": {
-        "primary": "Grind coarser only",
-        "explanation": "Your coffee is over-extracted but has good strength. Try:",
-        "adjustments": {
-          "grind": {
-            "direction": "coarser",
-            "steps": 2
-          },
-          "keepCurrent": ["dose", "ratio"]
-        }
-      },
-      "strong": {
-        "primary": "Grind coarser and decrease dose",
-        "explanation": "Your coffee is over-extracted and too strong. Try:",
-        "adjustments": {
-          "grind": {
-            "direction": "coarser",
-            "steps": 2
-          },
-          "dose": {
-            "change": -0.5,
-            "unit": "g"
-          },
-          "ratio": "higher"
+      "over": {
+        "weak": {
+          "primary": "Grind coarser and adjust ratio",
+          "explanation": "Your coffee is over-extracted and weak. Try:",
+          "adjustments": {
+            "grind": {
+              "direction": "coarser",
+              "steps": 3
+            },
+            "technique": [
+              "Pour more aggressively",
+              "Reduce total contact time"
+            ],
+            "dose": {
+              "change": 2,
+              "unit": "g"
+            }
+          }
+        },
+        "good": {
+          "primary": "Grind coarser only",
+          "explanation": "Your coffee is over-extracted but has good strength. Try:",
+          "adjustments": {
+            "grind": {
+              "direction": "coarser",
+              "steps": 2
+            },
+            "temperature": {
+              "change": -2
+            },
+            "keepCurrent": ["ratio", "technique"]
+          }
+        },
+        "strong": {
+          "primary": "Grind coarser and dilute",
+          "explanation": "Your coffee is over-extracted and too strong. Try:",
+          "adjustments": {
+            "grind": {
+              "direction": "coarser",
+              "steps": 3
+            },
+            "ratio": {
+              "target": 16.5,
+              "direction": "higher"
+            },
+            "technique": [
+              "Pour more quickly",
+              "Reduce contact time"
+            ],
+            "temperature": {
+              "change": -2
+            }
+          }
         }
       }
     }
