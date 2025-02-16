@@ -255,7 +255,6 @@ const RecipeForm = ({ onSave }) => {
   </div>
 )}
 <div className="mb-6">
-  <h3 className="text-lg font-semibold mb-4">Taste Profile</h3>
   <TasteProfileSelector
     onProfileChange={(profile) => setRecipe(prev => ({
       ...prev,
