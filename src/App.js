@@ -290,7 +290,7 @@ const RecipeForm = ({ onSave }) => {
   );
 };
 
-const RecipeList = ({ recipes, onSelect }) => {
+const RecipeList = ({ recipes, onSelect, onDelete }) => {
   if (recipes.length === 0) {
     return <p className="text-center text-gray-500">No recipes found</p>;
   }
@@ -300,7 +300,7 @@ const RecipeList = ({ recipes, onSelect }) => {
       <h2 className="text-2xl font-bold mb-4">Saved Recipes</h2>
       <ul className="space-y-4">
         {recipes.map((recipe) => (
-          <li key={recipe.id}>
+          <li key={recipe.id} className="relative">
             <button
               type="button"
               onClick={() => onSelect(recipe)}
@@ -316,6 +316,19 @@ const RecipeList = ({ recipes, onSelect }) => {
               <div className="text-xs text-gray-400 mt-1">
                 {recipe.brewingMethod ? recipe.brewingMethod.toUpperCase() : 'ESPRESSO'}
               </div>
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (window.confirm('Are you sure you want to delete this recipe?')) {
+                  onDelete(recipe.id);
+                }
+              }}
+              className="absolute top-2 right-2 p-2 text-red-600 hover:bg-red-50 rounded-full"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
             </button>
           </li>
         ))}
@@ -389,6 +402,14 @@ const App = () => {
     setRecipes(prevRecipes => [...prevRecipes, newRecipe]);
   };
 
+  const handleDeleteRecipe = (recipeId) => {
+    recipeStorage.deleteRecipe(recipeId);
+    setRecipes(prevRecipes => prevRecipes.filter(recipe => recipe.id !== recipeId));
+    if (selectedRecipe?.id === recipeId) {
+      setSelectedRecipe(null);
+    }
+  };
+
   return (
     <div className="max-w-lg mx-auto p-4 space-y-6">
       <h1 className="text-3xl font-bold text-center text-blue-800 mb-8">
@@ -404,9 +425,10 @@ const App = () => {
         <>
           <RecipeForm onSave={handleSaveRecipe} />
           <RecipeList
-            recipes={recipes}
-            onSelect={(recipe) => setSelectedRecipe(recipe)}
-          />
+  recipes={recipes}
+  onSelect={(recipe) => setSelectedRecipe(recipe)}
+  onDelete={handleDeleteRecipe}
+/>
         </>
       )}
     </div>
