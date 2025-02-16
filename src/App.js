@@ -389,6 +389,7 @@ const App = () => {
   const [recipes, setRecipes] = useState([]);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showScrollButton, setShowScrollButton] = useState(false);
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -398,6 +399,24 @@ const App = () => {
     };
     
     initializeApp();
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      
+      // Show button when user is within 100px of the bottom
+      const isNearBottom = windowHeight + scrollTop >= documentHeight - 100;
+      setShowScrollButton(isNearBottom);
+    };
+  
+    window.addEventListener('scroll', handleScroll);
+    // Initial check
+    handleScroll();
+  
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleSaveRecipe = (recipeData) => {
@@ -414,39 +433,50 @@ const App = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto p-4 space-y-6">
-      <h1 className="text-3xl font-bold text-center text-blue-800 mb-8">
-        Coffee Dialing App
-      </h1>
-
+    <div>
+      <div className="max-w-lg mx-auto p-4 space-y-6 mb-16">
+        <h1 className="text-3xl font-bold text-center text-blue-800 mb-8">
+          Coffee Dialing App
+        </h1>
+  
+        {selectedRecipe ? (
+          <RecipeDetail
+            recipe={selectedRecipe}
+            onClose={() => setSelectedRecipe(null)}
+          />
+        ) : (
+          <>
+            <RecipeForm onSave={handleSaveRecipe} />
+            <RecipeList
+              recipes={recipes}
+              onSelect={(recipe) => setSelectedRecipe(recipe)}
+              onDelete={handleDeleteRecipe}
+            />
+          </>
+        )}
+      </div>
+  
+      {/* Fixed feedback button at bottom */}
+      <div className={`fixed bottom-0 left-0 right-0 transition-transform duration-300 ${
+  showScrollButton ? 'translate-y-0' : 'translate-y-full'
+}`}>
+  <div className="p-4 bg-white border-t shadow-lg">
+    <div className="max-w-lg mx-auto">
       <button
-    onClick={() => setShowFeedback(true)}
-    className="px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-md flex items-center gap-2"
-  >
-    <MessageSquare className="w-4 h-4" />
-    Feedback
-  </button>
-
-      {selectedRecipe ? (
-        <RecipeDetail
-          recipe={selectedRecipe}
-          onClose={() => setSelectedRecipe(null)}
-        />
-      ) : (
-        <>
-          <RecipeForm onSave={handleSaveRecipe} />
-          <RecipeList
-  recipes={recipes}
-  onSelect={(recipe) => setSelectedRecipe(recipe)}
-  onDelete={handleDeleteRecipe}
-/>
-        </>
-      )}
-    {showFeedback && (
-      <FeedbackForm onClose={() => setShowFeedback(false)} />
-    )}
+        onClick={() => setShowFeedback(true)}
+        className="w-full bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 flex items-center justify-center gap-2 transition-colors"
+      >
+        <MessageSquare className="w-5 h-5" />
+        Share Feedback
+      </button>
     </div>
-
+  </div>
+</div>
+  
+      {showFeedback && (
+        <FeedbackForm onClose={() => setShowFeedback(false)} />
+      )}
+    </div>
   );
 };
 
