@@ -3,6 +3,8 @@ import './index.css';
 import DialingGuide from './components/DialingGuide';
 import { recipeStorage } from './utils/recipeStorage.js';
 import TasteProfileSelector from './components/recipe/TasteProfileSelector';
+import { MessageSquare } from 'lucide-react';
+import FeedbackForm from './components/FeedbackForm';
 
 const getInitialRecipe = (method) => ({
   beanInfo: {
@@ -386,6 +388,7 @@ const RecipeDetail = ({ recipe, onClose }) => {
 const App = () => {
   const [recipes, setRecipes] = useState([]);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
+  const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -416,6 +419,14 @@ const App = () => {
         Coffee Dialing App
       </h1>
 
+      <button
+    onClick={() => setShowFeedback(true)}
+    className="px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-md flex items-center gap-2"
+  >
+    <MessageSquare className="w-4 h-4" />
+    Feedback
+  </button>
+
       {selectedRecipe ? (
         <RecipeDetail
           recipe={selectedRecipe}
@@ -431,7 +442,11 @@ const App = () => {
 />
         </>
       )}
+    {showFeedback && (
+      <FeedbackForm onClose={() => setShowFeedback(false)} />
+    )}
     </div>
+
   );
 };
 
