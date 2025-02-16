@@ -2,8 +2,42 @@ import React, { useState, useEffect } from 'react';
 import './index.css';
 import DialingGuide from './components/DialingGuide';
 import { recipeStorage } from './utils/recipeStorage.js';
+import TasteProfileSelector from './components/recipe/TasteProfileSelector';
 
-const getInitialRecipe = (method) => ({ beanInfo: { name: '', roaster: '', roastDate: new Date().toISOString().split('T')[0], }, baseParams: { grindSize: 20, doseWeight: method === 'espresso' ? 18 : 15, waterTemperature: 93, }, methodParams: method === 'espresso' ? { yield: 36, brewTime: 30, pressure: null } : { totalWater: 250, bloomWater: 30, bloomTime: 30, pourStages: [], totalTime: 180, drawdownTime: null }, });
+const getInitialRecipe = (method) => ({
+  beanInfo: {
+    name: '',
+    roaster: '',
+    roastDate: new Date().toISOString().split('T')[0],
+  },
+  baseParams: {
+    grindSize: 20,
+    doseWeight: method === 'espresso' ? 18 : 15,
+    waterTemperature: 93,
+  },
+  methodParams: method === 'espresso'
+    ? { yield: 36, brewTime: 30, pressure: null }
+    : { totalWater: 250, bloomWater: 30, bloomTime: 30, pourStages: [], totalTime: 180, drawdownTime: null },
+  results: {
+    rating: 0,
+    taste: {
+      sour: false,
+      bitter: false,
+      balanced: false,
+      strength: 'good',
+      notes: '',
+      profile: {
+        selectedFlavors: [],
+        intensity: {
+          acidity: 3,
+          sweetness: 3,
+          body: 3
+        },
+        notes: ''
+      }
+    }
+  }
+});
 
 const RecipeForm = ({ onSave }) => {
   const [brewingMethod, setBrewingMethod] = useState('espresso');
@@ -220,7 +254,21 @@ const RecipeForm = ({ onSave }) => {
     </div>
   </div>
 )}
-
+<div className="mb-6">
+  <TasteProfileSelector
+    onProfileChange={(profile) => setRecipe(prev => ({
+      ...prev,
+      results: {
+        ...prev.results,
+        taste: {
+          ...prev.results.taste,
+          profile
+        }
+      }
+    }))}
+    initialProfile={recipe.results?.taste?.profile}
+  />
+</div>
       {/* Add the Dialing Guide component here */}
       <DialingGuide 
   currentRecipe={recipe}

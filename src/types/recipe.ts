@@ -1,3 +1,5 @@
+import { TasteProfile } from './flavor';
+
 export type BrewingMethod = 'espresso' | 'v60';
 
 export interface BaseBeanInfo {
@@ -40,6 +42,7 @@ export interface TasteResults {
     balanced: boolean;
     strength: 'weak' | 'good' | 'strong';
     notes: string;
+    profile: TasteProfile;  // Added this line
   };
 }
 
@@ -52,3 +55,4 @@ export interface Recipe {
   methodParams: EspressoParams | V60Params;
   results: TasteResults;
 }
+
