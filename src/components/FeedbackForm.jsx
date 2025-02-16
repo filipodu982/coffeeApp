@@ -10,6 +10,11 @@ const FeedbackForm = ({ onClose }) => {
   const [error, setError] = useState('');
   const [sending, setSending] = useState(false);
 
+  useEffect(() => {
+    // Initialize EmailJS
+    emailjs.init(emailConfig.publicKey);
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -20,7 +25,6 @@ const FeedbackForm = ({ onClose }) => {
 
     setSending(true);
 
-    // Prepare the feedback data
     const templateParams = {
       rating: rating,
       comment: comment,
@@ -29,10 +33,9 @@ const FeedbackForm = ({ onClose }) => {
 
     try {
       await emailjs.send(
-        'service_d7jz7b2',  // Replace with your EmailJS service ID
-        'template_mg0qk6k', // Replace with your EmailJS template ID
-        templateParams,
-        'pGU_XLHOBp29W-sFz'   // Replace with your EmailJS public key
+        emailConfig.serviceId,
+        emailConfig.templateId,
+        templateParams
       );
 
       setSubmitted(true);
