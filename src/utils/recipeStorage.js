@@ -1,4 +1,3 @@
-// Define brewing method constants
 const BREWING_METHODS = {
   ESPRESSO: 'espresso',
   V60: 'v60'
@@ -12,45 +11,70 @@ class RecipeStorage {
   async migrateExistingRecipes() {
     const existingRecipes = this.getAllRecipes();
     const migratedRecipes = existingRecipes.map(recipe => {
-      // Check if recipe is already in new format
-      if ('brewingMethod' in recipe) {
-        return recipe;
+      // First, check if recipe needs the brewing method migration
+      if (!('brewingMethod' in recipe)) {
+        recipe = this.migrateToNewFormat(recipe);
       }
-
-      // Migrate old format to new format
-      return {
-        id: recipe.id || Date.now().toString(),
-        createdAt: recipe.createdAt || new Date().toISOString(),
-        brewingMethod: BREWING_METHODS.ESPRESSO,
-        beanInfo: {
-          name: recipe.beanName || '',
-          roaster: recipe.roaster || '',
-          roastDate: recipe.roastDate || new Date().toISOString(),
-        },
-        baseParams: {
-          grindSize: recipe.grindSize || 20,
-          doseWeight: recipe.doseWeight || 18,
-          waterTemperature: recipe.temperature,
-        },
-        methodParams: {
-          yield: recipe.yield || 36,
-          brewTime: recipe.brewTime || 30,
-          pressure: recipe.pressure,
-        },
-        results: {
-          rating: recipe.rating || 0,
-          taste: {
-            sour: recipe.isSour || false,
-            bitter: recipe.isBitter || false,
-            balanced: recipe.isBalanced || false,
-            strength: 'good',
-            notes: recipe.notes || '',
-          },
-        },
-      };
+      
+      // Then, check if recipe needs the taste profile
+      if (!recipe.results?.taste?.profile) {
+        recipe = {
+          ...recipe,
+          results: {
+            ...recipe.results,
+            taste: {
+              ...recipe.results.taste,
+              profile: {
+                selectedFlavors: [],
+                intensity: {
+                  acidity: 3,
+                  sweetness: 3,
+                  body: 3
+                },
+                notes: ''
+              }
+            }
+          }
+        };
+      }
+      
+      return recipe;
     });
 
     localStorage.setItem(this.storageKey, JSON.stringify(migratedRecipes));
+  }
+
+  migrateToNewFormat(recipe) {
+    return {
+      id: recipe.id || Date.now().toString(),
+      createdAt: recipe.createdAt || new Date().toISOString(),
+      brewingMethod: BREWING_METHODS.ESPRESSO,
+      beanInfo: {
+        name: recipe.beanName || '',
+        roaster: recipe.roaster || '',
+        roastDate: recipe.roastDate || new Date().toISOString(),
+      },
+      baseParams: {
+        grindSize: recipe.grindSize || 20,
+        doseWeight: recipe.doseWeight || 18,
+        waterTemperature: recipe.temperature,
+      },
+      methodParams: {
+        yield: recipe.yield || 36,
+        brewTime: recipe.brewTime || 30,
+        pressure: recipe.pressure,
+      },
+      results: {
+        rating: recipe.rating || 0,
+        taste: {
+          sour: recipe.isSour || false,
+          bitter: recipe.isBitter || false,
+          balanced: recipe.isBalanced || false,
+          strength: 'good',
+          notes: recipe.notes || '',
+        },
+      },
+    };
   }
 
   createRecipe(recipe) {
@@ -91,6 +115,15 @@ class RecipeStorage {
           balanced: false,
           strength: 'good',
           notes: '',
+          profile: {
+            selectedFlavors: [],
+            intensity: {
+              acidity: 3,
+              sweetness: 3,
+              body: 3
+            },
+            notes: ''
+          }
         },
         ...recipe.results,
       },
@@ -123,5 +156,4 @@ class RecipeStorage {
   }
 }
 
-// Initialize and export a single instance
 export const recipeStorage = new RecipeStorage();
